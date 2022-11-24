@@ -3,13 +3,29 @@
 Lazylifecycle callbacks is a simple framework to defer your non essential tasks, and initialisations out 
 of the screen launch path while maintaining the same execution guarantees of android lifecycle callbacks.
 
-
-## Fundamentals
+## Fundamentals of lazy callbacks
  - First Draw : When the app is launched, play store tracks the COLD, WARM and HOT launch numbers. And it does so by measuring how fast your app is able to draw your first frame. App can start via launcher, notifications, deeplinks etc, and each could land the user in different screens. App is considered to have rendered its first screen when the "Displayed" marker is shown on the logcat. It always shown after all the upward callbacks such as onCreate, onStart, and onResume have returned.
  
  - So, any code that is executing in onCreate, onStart, and onResume, and other upward callbacks(not mentioning things like onPostResume) has potential to make the screen launch time bad. So, it is advisable to remove deferrable code away from android lifecycle callbacks.
  
  - But where should we move it? We can do things on demand, but not every thing can be moved ondemand. For example, you want to start making the n/w calls for fetching the images as soon as possible. Here, we do not want it to start while the screen's rendering is happening, but the moment screen renders with the placeholder view, we need to start the n/w-db calls. Suppose you want to load draft of a email from the db, first we would like to render the compose screen and then start fetching the draft.
+
+## APIs
+- activate() - activates lazy callbacks on an activity, usually done in onResume()
+- deactivate() - deactivates lazy callbacks on an activity, usually done in onPause()
+- watchedView - each screen has an unique view that is critical for that screen, and rendering on that screen can be considered as launch. If no watched view is provided or identified, decor view can be used.
+- supportsLazyLifecycleCallbacks - This helps us onboard the framework incrementally, and enables us to conduct exeperiments to measure improvement. If this returns false for an activity, lazy lifecycle callbacks are not enabled for that screen. Each screen can override its value separately.
+- LazyLifecycleCallbacks - Any activity/fragment that wants on onboard these callbacks have to implement this interface.
+
+## The lazy callbacks provided by the framework 
+- onLazyCreate - Executes once per activity/fragment just like onCreate, but after 1st draw on screen finishes.
+- onLazyStart - Excecutes if the activity resumes from a stopped state, but after 1st draw on screen finishes.
+- onLazyResume - Excecutes if the activity resumes from a paused state, but after 1st draw on screen finishes.
+- onViewCreatedLazy(view) - This is called only for fragments after 1st draw on screen finishes.
+
+## Relative ordering of lazy callbacks
+The order of these callbacks are maintained as per android. In an activity, onLazyCreate() will be followed by on LazyStart(), followed by onLazyResume().
+In Fragments, onCreate() will be followed by onViewCreatedLazy(), followed by onStart() followed by onResume().
 
 ## Contributing
 
