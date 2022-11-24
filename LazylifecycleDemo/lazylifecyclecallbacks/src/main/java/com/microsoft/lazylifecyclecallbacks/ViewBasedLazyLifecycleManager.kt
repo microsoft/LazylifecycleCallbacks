@@ -55,7 +55,7 @@ class ViewBasedLazyLifecycleManager @JvmOverloads constructor(
                         dispatchLazyLifecycleCallbacks()
                         // Move to the next state.
                         state = state.next()
-                    }.startSLA()
+                    }.startTimer()
 
                 override fun onPreDraw(): Boolean {
                     lazyBarrier.strike()

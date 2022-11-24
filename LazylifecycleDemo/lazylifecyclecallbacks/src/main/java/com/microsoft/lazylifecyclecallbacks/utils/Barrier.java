@@ -38,7 +38,6 @@ public final class Barrier {
 
     private long mSLA = -1;
     private BarrierCode mCode;
-    private boolean mShouldPostOnMainThread;
 
     private Barrier(WeakReference<Condition> condition) {
         this.mCondition = condition;
@@ -75,13 +74,13 @@ public final class Barrier {
      * Defines the optional SLA for the execution. If the condition does not get satisfied till the SLA
      * reaches, the defined barrier code will get executed anyways. It takes a parameter,
      * shouldPostOnMainThread that dictates on which thread code gets executed. If this method is called
-     * multiple times on a barrier object before calling {@link Barrier#startSLA()} only the last call
-     * is honoured. Calling this after {@link Barrier#startSLA()} has no effect.
-     * Note: It is important to call {@link Barrier#startSLA()} after calling this method that
+     * multiple times on a barrier object before calling {@link Barrier#startTimer()} only the last call
+     * is honoured. Calling this after {@link Barrier#startTimer()} has no effect.
+     * Note: It is important to call {@link Barrier#startTimer()} after calling this method that
      * triggers the operation of posting the BarrierCode on the required thread. Not calling startSLA()
      * will ignore SLA parameter and nothing will happen in relation to SLA.
      *
-     * @param overrideDeadlineMillis            SLA in milli seconds.
+     * @param overrideDeadlineMillis SLA in milli seconds.
      * @return Barrier object after capturing SLA.
      */
     public Barrier withOverrideDeadline(long overrideDeadlineMillis) {
@@ -100,7 +99,7 @@ public final class Barrier {
      *
      * @return Barrier
      */
-    public Barrier startSLA() {
+    public Barrier startTimer() {
         if (mCode == null) {
             throw new IllegalStateException("BarrierCode not defined in the barrier.");
         }
