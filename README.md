@@ -1,14 +1,15 @@
-# Project
+# LazyLifecycle callbacks
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+Lazylifecycle callbacks is a simple framework to defer your non essential tasks, and initialisations out 
+of the screen launch path while maintaining the same execution guarantees of android lifecycle callbacks.
 
-As the maintainer of this project, please make a few updates:
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+## Fundamentals
+ - First Draw : When the app is launched, play store tracks the COLD, WARM and HOT launch numbers. And it does so by measuring how fast your app is able to draw your first frame. App can start via launcher, notifications, deeplinks etc, and each could land the user in different screens. App is considered to have rendered its first screen when the "Displayed" marker is shown on the logcat. It always shown after all the upward callbacks such as onCreate, onStart, and onResume have returned.
+ 
+ - So, any code that is executing in onCreate, onStart, and onResume, and other upward callbacks(not mentioning things like onPostResume) has potential to make the screen launch time bad. So, it is advisable to remove deferrable code away from android lifecycle callbacks.
+ 
+ - But where should we move it? We can do things on demand, but not every thing can be moved ondemand. For example, you want to start making the n/w calls for fetching the images as soon as possible. Here, we do not want it to start while the screen's rendering is happening, but the moment screen renders with the placeholder view, we need to start the n/w-db calls. Suppose you want to load draft of a email from the db, first we would like to render the compose screen and then start fetching the draft.
 
 ## Contributing
 
