@@ -35,6 +35,7 @@ One thing to mind is, all the lazy callbacks happen after the triggers of the la
 4. and call `lifecycleManager.deactivate()` in `onPause()`
 5. Override `supportsLazyLifecycleCallbacks()` to `true`.
 6. You are done. Other implementations of your `BaseActivity` can now override the lazy lifecycle callbacks and use it.
+See the code below:
 
 
 abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
