@@ -65,6 +65,7 @@ abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
     override fun supportsLazyLifecycleCallbacks(): Boolean = false
 }
 
+Note: Similar steps will be required for fragments by override, `LazyFragmentLifecycleCallbacks` interface
 
 ## Contributing
 
