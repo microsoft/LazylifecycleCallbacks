@@ -30,9 +30,10 @@ One thing to mind is, all the lazy callbacks happen after the triggers of the la
 
 
 ## How to setup
+Add the below code to the `build.gradle` file
 `
 dependencies {
-	        implementation 'com.github.microsoft:LazylifecycleCallbacks:Tag'
+	        implementation 'com.github.microsoft:LazylifecycleCallbacks:v1.0'
 	}
 ` 
 
