@@ -36,7 +36,7 @@ One thing to mind is, all the lazy callbacks happen after the triggers of the la
 5. Override `supportsLazyLifecycleCallbacks()` to `true`.
 6. You are done. Other implementations of your `BaseActivity` can now override the lazy lifecycle callbacks and use it.
 
-abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
+`abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
 
     protected lateinit var lazyLifecycleManager: LazyLifecycleManager
 
@@ -62,7 +62,7 @@ abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
     override fun onLazyResume() {}
 
     override fun supportsLazyLifecycleCallbacks(): Boolean = false
-}
+}`
 
 ## Contributing
 
