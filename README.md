@@ -1,4 +1,4 @@
-# LazyLifecycle callbacks [ Documentation WIP ] 
+# LazyLifecycle callbacks
 
 Lazylifecycle callbacks is a simple framework to defer your non essential tasks, and initialisations out 
 of the screen launch path while maintaining the same execution guarantees of android lifecycle callbacks.
@@ -18,33 +18,49 @@ of the screen launch path while maintaining the same execution guarantees of and
 - LazyLifecycleCallbacks - Any activity/fragment that wants on onboard these callbacks have to implement this interface.
 
 ## The lazy callbacks provided by the framework 
-- onLazyCreate - Executes once per activity/fragment just like onCreate, but after 1st draw on screen finishes.
-- onLazyStart - Excecutes if the activity resumes from a stopped state, but after 1st draw on screen finishes.
-- onLazyResume - Excecutes if the activity resumes from a paused state, but after 1st draw on screen finishes.
+- onLazyCreate - Executes once per activity/fragment just like onCreate, but after 1st draw on screen finishes or on expiry of timeout.
+- onLazyStart - Excecutes if the activity resumes from a stopped state, but after 1st draw on screen finishes or on expiry of timeout.
+- onLazyResume - Excecutes if the activity resumes from a paused state, but after 1st draw on screen finishes or on expiry of timeout.
 - onViewCreatedLazy(view) - This is called only for fragments after 1st draw on screen finishes.
 
 ## Relative ordering of lazy callbacks
 The order of these callbacks are maintained as per android. In an activity, onLazyCreate() will be followed by on LazyStart(), followed by onLazyResume().
-In Fragments, onCreate() will be followed by onViewCreatedLazy(), followed by onStart() followed by onResume().
+In Fragments, onLazyCreate() will be followed by onViewCreatedLazy(view), followed by onLazyStart() followed by onLazyResume().
+One thing to mind is, all the lazy callbacks happen after the triggers of the lazy lifecycle manager are satisfied. They do not interlace with the android lifecycle callbacks.
 
-## Contributing
+## How to setup
+1. Implement `LazyLifecycleCallbacks` interface in the Activity(preferrebly a `BaseActivity`), and provide the default implementations of the method.
+2. Create instance of LazyLifecycleManager in `onCreate()`.
+3. Call `lifecycleManager.activate()` in `onResume`,
+4. and call `lifecycleManager.deactivate()` in `onPause()`
+5. Override `supportsLazyLifecycleCallbacks()` to `true`.
+6. You are done. Other implementations of your `BaseActivity` can now override the lazy lifecycle callbacks and use it.
+See the code below:
+```kotlin
+abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+    protected lateinit var lazyLifecycleManager: LazyLifecycleManager
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lazyLifecycleManager = ViewBasedLazyLifecycleManager(this)
+    }
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+    override fun onResume() {
+        super.onResume()
+        lazyLifecycleManager.activate()
+    }
 
-## Trademarks
+    override fun onPause() {
+        super.onPause()
+        lazyLifecycleManager.deactivate()
+    }
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+    override fun onLazyCreate() {}
+
+    override fun onLazyStart() {}
+
+    override fun onLazyResume() {}
+
+    override fun supportsLazyLifecycleCallbacks(): Boolean = false
+}
