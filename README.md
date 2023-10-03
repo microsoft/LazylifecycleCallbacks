@@ -1,4 +1,4 @@
-# LazyLifecycle callbacks [ Documentation WIP ] 
+# LazyLifecycle callbacks
 
 Lazylifecycle callbacks is a simple framework to defer your non essential tasks, and initialisations out 
 of the screen launch path while maintaining the same execution guarantees of android lifecycle callbacks.
