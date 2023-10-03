@@ -28,13 +28,22 @@ The order of these callbacks are maintained as per android. In an activity, onLa
 In Fragments, onLazyCreate() will be followed by onViewCreatedLazy(view), followed by onLazyStart() followed by onLazyResume().
 One thing to mind is, all the lazy callbacks happen after the triggers of the lazy lifecycle manager are satisfied. They do not interlace with the android lifecycle callbacks.
 
+
 ## How to setup
+Add the below code to the `build.gradle` file
+`
+dependencies {
+	        implementation 'com.github.microsoft:LazylifecycleCallbacks:v1.0'
+	}
+` 
+
 1. Implement `LazyLifecycleCallbacks` interface in the Activity(preferrebly a `BaseActivity`), and provide the default implementations of the method.
 2. Create instance of LazyLifecycleManager in `onCreate()`.
 3. Call `lifecycleManager.activate()` in `onResume`,
 4. and call `lifecycleManager.deactivate()` in `onPause()`
 5. Override `supportsLazyLifecycleCallbacks()` to `true`.
 6. You are done. Other implementations of your `BaseActivity` can now override the lazy lifecycle callbacks and use it.
+   
 See the code below:
 ```kotlin
 abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
