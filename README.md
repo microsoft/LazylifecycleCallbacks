@@ -18,14 +18,51 @@ of the screen launch path while maintaining the same execution guarantees of and
 - LazyLifecycleCallbacks - Any activity/fragment that wants on onboard these callbacks have to implement this interface.
 
 ## The lazy callbacks provided by the framework 
-- onLazyCreate - Executes once per activity/fragment just like onCreate, but after 1st draw on screen finishes.
-- onLazyStart - Excecutes if the activity resumes from a stopped state, but after 1st draw on screen finishes.
-- onLazyResume - Excecutes if the activity resumes from a paused state, but after 1st draw on screen finishes.
+- onLazyCreate - Executes once per activity/fragment just like onCreate, but after 1st draw on screen finishes or on expiry of timeout.
+- onLazyStart - Excecutes if the activity resumes from a stopped state, but after 1st draw on screen finishes or on expiry of timeout.
+- onLazyResume - Excecutes if the activity resumes from a paused state, but after 1st draw on screen finishes or on expiry of timeout.
 - onViewCreatedLazy(view) - This is called only for fragments after 1st draw on screen finishes.
 
 ## Relative ordering of lazy callbacks
 The order of these callbacks are maintained as per android. In an activity, onLazyCreate() will be followed by on LazyStart(), followed by onLazyResume().
-In Fragments, onCreate() will be followed by onViewCreatedLazy(), followed by onStart() followed by onResume().
+In Fragments, onLazyCreate() will be followed by onViewCreatedLazy(view), followed by onLazyStart() followed by onLazyResume().
+One thing to mind is, all the lazy callbacks happen after the triggers of the lazy lifecycle manager are satisfied. They do not interlace with the android lifecycle callbacks.
+
+## How to setup
+1. Implement `LazyLifecycleCallbacks` interface in the Activity(preferrebly a `BaseActivity`), and provide the default implementations of the method.
+2. Create instance of LazyLifecycleManager in `onCreate()`.
+3. Call `lifecycleManager.activate()` in `onResume`,
+4. and call `lifecycleManager.deactivate()` in `onPause()`
+5. Override `supportsLazyLifecycleCallbacks()` to `true`.
+6. You are done. Other implementations of your `BaseActivity` can now override the lazy lifecycle callbacks and use it.
+
+abstract class BaseActivity : AppCompatActivity(), LazyLifecycleCallbacks {
+
+    protected lateinit var lazyLifecycleManager: LazyLifecycleManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lazyLifecycleManager = ViewBasedLazyLifecycleManager(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lazyLifecycleManager.activate()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        lazyLifecycleManager.deactivate()
+    }
+
+    override fun onLazyCreate() {}
+
+    override fun onLazyStart() {}
+
+    override fun onLazyResume() {}
+
+    override fun supportsLazyLifecycleCallbacks(): Boolean = false
+}
 
 ## Contributing
 
